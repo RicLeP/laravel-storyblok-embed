@@ -26,8 +26,8 @@ trait EmbedsMedia
 		$embed = new Embed();
 
 		$info = $embed->get($this->content);
-dd($info->code);
-dd($embed->get($this->content));
+//dd($info->code);
+//dd($embed->get($this->content));
 		$this->_embed = $this->content ? $embed->get($this->content) : null;
 	}
 
@@ -38,14 +38,14 @@ dd($embed->get($this->content));
 	 *
 	 * @return string
 	 */
-	public function html(): string
-	{
-		if (!$this->_embed) {
-			return '';
-		}
-
-		return $this->_embed->code;
-	}
+//	public function html(): string
+//	{
+//		if (!$this->_embed) {
+//			return '';
+//		}
+//
+//		return $this->_embed->code;
+//	}
 
 
 	/**
@@ -129,34 +129,34 @@ dd($embed->get($this->content));
 	 *
 	 * @return string|null
 	 */
-	public function rawEmbed(): ?string
-	{
-		$doc = new DOMDocument();
-		$doc->loadHTML($this->_embed->code, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
-		$xpath = new DOMXpath($doc);
-
-		$scripts = [];
-
-		foreach($xpath->query('//script') as $queryResult) {
-			$scripts[] = $queryResult->ownerDocument->saveHTML($queryResult);
-			$queryResult->parentNode->removeChild($queryResult);
-		}
-
-		dd($scripts, $doc->saveHTML());
-
-		return $doc->saveHTML();
-	}
+//	public function rawEmbed(): ?string
+//	{
+//		$doc = new DOMDocument();
+//		$doc->loadHTML($this->_embed->code, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+//
+//		$xpath = new DOMXpath($doc);
+//
+//		$scripts = [];
+//
+//		foreach($xpath->query('//script') as $queryResult) {
+//			$scripts[] = $queryResult->ownerDocument->saveHTML($queryResult);
+//			$queryResult->parentNode->removeChild($queryResult);
+//		}
+//
+//		dd($scripts, $doc->saveHTML());
+//
+//		return $doc->saveHTML();
+//	}
 
 	/**
 	 * Returns the Embed\Embed object.
 	 *
 	 * @return Embed
 	 */
-	public function embed(): Embed
-	{
-		return $this->_embed;
-	}
+//	public function embed(): Embed
+//	{
+//		return $this->_embed;
+//	}
 
 	/**
 	 * Returns a path to a view to use for embedding this type of media.
@@ -164,18 +164,18 @@ dd($embed->get($this->content));
 	 *
 	 * @return false|string
 	 */
-	protected function baseEmbedView(): bool|string
-	{
-		if (view()->exists(config('storyblok.view_path') . 'embeds.' . strtolower($this->_embed->providerName))) {
-			return config('storyblok.view_path') . 'embeds.' . strtolower($this->_embed->providerName);
-		}
-
-		if (view()->exists('laravel-storyblok::embeds.' . strtolower($this->_embed->providerName))) {
-			return 'laravel-storyblok::embeds.' . strtolower($this->_embed->providerName);
-		}
-
-		return false;
-	}
+//	protected function baseEmbedView(): bool|string
+//	{
+//		if (view()->exists(config('storyblok.view_path') . 'embeds.' . strtolower($this->_embed->providerName))) {
+//			return config('storyblok.view_path') . 'embeds.' . strtolower($this->_embed->providerName);
+//		}
+//
+//		if (view()->exists('laravel-storyblok::embeds.' . strtolower($this->_embed->providerName))) {
+//			return 'laravel-storyblok::embeds.' . strtolower($this->_embed->providerName);
+//		}
+//
+//		return false;
+//	}
 
 
 	/**
@@ -183,8 +183,8 @@ dd($embed->get($this->content));
 	 *
 	 * @return string
 	 */
-	public function __toString(): string
-	{
-		return $this->html();
-	}
+//	public function __toString(): string
+//	{
+//		return $this->html();
+//	}
 }
