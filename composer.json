@@ -1,0 +1,52 @@
+{
+    "name": "riclep/laravel-storyblok-embed",
+    "description": "Embed in Storyblok",
+    "keywords": [
+        "riclep",
+        "laravel-storyblok-cli",
+        "cli",
+        "storyblok cli",
+        "laravel cli",
+        "artisan storyblok"
+    ],
+    "homepage": "https://github.com/riclep/laravel-storyblok-embed",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Richard Le Poidevin",
+            "email": "ric@sirric.co.uk",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+	    "ext-dom": "*",
+	    "embed/embed": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Riclep\\StoryblokEmbed\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Riclep\\StoryblokEmbed\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Riclep\\StoryblokEmbed\\StoryblokEmbedServiceProvider"
+			]
+		}
+	}
+}
