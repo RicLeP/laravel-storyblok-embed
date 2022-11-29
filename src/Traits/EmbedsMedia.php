@@ -7,75 +7,121 @@ use DOMDocument;
 use DOMXPath;
 use Embed\DataInterface;
 use Embed\Embed;
-use Embed\Extractor;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\View\View;
 
 trait EmbedsMedia
 {
 	/**
 	 * The Embed\Embed object.
 	 *
-	 * @var DataInterface|null
+	 * @var array|null
 	 */
-	private Extractor|null $_embed;
+	private ?array $_embedData;
 
 	/**
 	 * Initialises the Embed object.
 	 */
 	protected function initEmbedsMedia(): void
 	{
-		$embed = new Embed();
-
-		$info = $embed->get($this->content);
-//dd($info->code);
-//dd($embed->get($this->content));
-		$this->_embed = $this->content ? $embed->get($this->content) : null;
+		$this->_embedData = $this->content ? $this->makeRequest() : null;
 	}
 
-
-	/**
-	 * Returns the embed code looking for a view in storyblok.embeds or the package.
-	 * If neither are found the raw embed code is returned.
-	 *
-	 * @return string
-	 */
-//	public function html(): string
-//	{
-//		if (!$this->_embed) {
-//			return '';
-//		}
-//
-//		return $this->_embed->code;
-//	}
-
-
-	/**
-	 * Returns the embed code looking for a view in storyblok.embeds or the package.
-	 * If neither are found the raw embed code is returned.
-	 *
-	 * @return \Illuminate\View\View
-	 */
-	public function htmlVue(): \Illuminate\View\View
+	protected function makeRequest()
 	{
-		if (!$this->_embed) {
+		if (!config('storyblok-embed.cache')) {
+			$response = $this->extractData($this->content);
+		} else {
+			$cache = Cache::getFacadeRoot();
+
+			if (Cache::getStore() instanceof \Illuminate\Cache\TaggableStore) {
+				$cache = $cache->tags('storyblok');
+			}
+
+			$hash = md5($this->content);
+
+			$response = $cache->remember($hash , config('storyblok-embed.cache_duration') * 60, function () {
+				return $this->extractData($this->content);
+			});
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Extracts the key fields from the Embed object and allows
+	 * caching of the response.
+	 *
+	 * @param $response
+	 * @return array
+	 */
+	protected function extractData($response): array
+	{
+		$embed = new Embed();
+
+		$response = $embed->get($response);
+
+		return [
+			'title' => $response->title,
+			'description' => $response->description,
+			'url' => (string) $response->url,
+			'keywords' => $response->keywords,
+			'image' => $response->image,
+			'code' => $response->code,
+			'feeds' => $response->feeds,
+			'authorName' => $response->authorName,
+			'authorUrl' => (string) $response->authorUrl,
+			'providerName' => $response->providerName,
+			'publishedTime' => $response->publishedTime,
+			'language' => $response->language,
+		];
+	}
+
+	/**
+	 * Returns the embed code looking for a view in storyblok.embeds or the package.
+	 * If neither are found the raw embed code is returned.
+	 *
+	 * @return View|string
+	 */
+	public function render()
+	{
+		$view = 'default';
+
+		if (!$this->_embedData) {
 			return '';
 		}
 
-		return view('laravel-storyblok-embed::embed', $this->extractScripts());
+		if ($this->_embedData['code']) {
+			return view('laravel-storyblok-embed::code', $this->extractScriptsFromCode());
+		}
+
+		return view('laravel-storyblok-embed::' . $view, [
+			'embed' => $this->_embedData,
+		]);
 	}
 
-
-
-
+	/**
+	 * Render the embed using you own view, the embed object is passed to the view.
+	 *
+	 * @param $view
+	 * @return View
+	 */
+	public function renderUsing($view): View
+	{
+		return view($view, [
+			'embed' => $this->_embedData,
+		]);
+	}
 
 	/**
 	 * Returns the raw embed code.
 	 *
 	 * @return array
 	 */
-	protected function extractScripts(): array
+	protected function extractScriptsFromCode(): array
 	{
 		$doc = new DOMDocument();
-		$doc->loadHTML($this->_embed->code, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+		$doc->loadHTML($this->_embedData['code'], LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
 		$xpath = new DOMXpath($doc);
 
@@ -91,100 +137,4 @@ trait EmbedsMedia
 			'scripts' => $scripts
 		];
 	}
-
-
-
-
-
-
-	/**
-	 * Returns the embed code looking for a view in storyblok.embeds or the package.
-	 * If neither are found the raw embed code is returned.
-	 *
-	 * @return string
-	 */
-//	public function html(): string
-//	{
-//		if (!$this->_embed) {
-//			return '';
-//		}
-//
-//		if (method_exists($this, 'embedView')) {
-//			$method = 'embedView';
-//		} else {
-//			$method = 'baseEmbedView';
-//		}
-//
-//		if ($this->{$method}()) {
-//			return (string) view($this->{$method}(), [
-//				'embed' => $this->_embed,
-//			]);
-//		}
-//
-//		return $this->rawEmbed();
-//	}
-
-	/**
-	 * Returns the raw embed code.
-	 *
-	 * @return string|null
-	 */
-//	public function rawEmbed(): ?string
-//	{
-//		$doc = new DOMDocument();
-//		$doc->loadHTML($this->_embed->code, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-//
-//		$xpath = new DOMXpath($doc);
-//
-//		$scripts = [];
-//
-//		foreach($xpath->query('//script') as $queryResult) {
-//			$scripts[] = $queryResult->ownerDocument->saveHTML($queryResult);
-//			$queryResult->parentNode->removeChild($queryResult);
-//		}
-//
-//		dd($scripts, $doc->saveHTML());
-//
-//		return $doc->saveHTML();
-//	}
-
-	/**
-	 * Returns the Embed\Embed object.
-	 *
-	 * @return Embed
-	 */
-//	public function embed(): Embed
-//	{
-//		return $this->_embed;
-//	}
-
-	/**
-	 * Returns a path to a view to use for embedding this type of media.
-	 * If the view can not be found it should return false.
-	 *
-	 * @return false|string
-	 */
-//	protected function baseEmbedView(): bool|string
-//	{
-//		if (view()->exists(config('storyblok.view_path') . 'embeds.' . strtolower($this->_embed->providerName))) {
-//			return config('storyblok.view_path') . 'embeds.' . strtolower($this->_embed->providerName);
-//		}
-//
-//		if (view()->exists('laravel-storyblok::embeds.' . strtolower($this->_embed->providerName))) {
-//			return 'laravel-storyblok::embeds.' . strtolower($this->_embed->providerName);
-//		}
-//
-//		return false;
-//	}
-
-
-	/**
-	 * Returns the embed code
-	 *
-	 * @return string
-	 */
-//	public function __toString(): string
-//	{
-//		return $this->html();
-//	}
 }

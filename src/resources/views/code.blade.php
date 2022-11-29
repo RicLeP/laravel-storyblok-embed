@@ -1,6 +1,3 @@
-@php
-   //dd($scripts, $html);
-@endphp
 
 {!! $html !!}
 
