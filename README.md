@@ -1,20 +1,22 @@
-# Laravel Storyblok - Artisan CLI
+# Laravel Storyblok Embed
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/riclep/laravel-storyblok-cli.svg?style=flat-square)](https://packagist.org/packages/riclep/laravel-storyblok-cli)
-[![Total Downloads](https://img.shields.io/packagist/dt/riclep/laravel-storyblok-cli.svg?style=flat-square)](https://packagist.org/packages/riclep/laravel-storyblok-cli)
-![GitHub Actions](https://github.com/riclep/laravel-storyblok-cli/actions/workflows/main.yml/badge.svg)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/riclep/laravel-storyblok-embed.svg?style=flat-square)](https://packagist.org/packages/riclep/laravel-storyblok-embed)
+[![Total Downloads](https://img.shields.io/packagist/dt/riclep/laravel-storyblok-embed.svg?style=flat-square)](https://packagist.org/packages/riclep/laravel-storyblok-embed)
+![GitHub Actions](https://github.com/riclep/laravel-storyblok-embed/actions/workflows/main.yml/badge.svg)
 
-Artisan commands for working with the Storyblok API in Laravel.
+Use the fantastic [Embed package by Óscar Otero](https://github.com/oscarotero/Embed) to embed nearly anything in your website - YouTube videos, Tweets, Instagram images etc.
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require riclep/laravel-storyblok-cli
+composer require riclep/laravel-storyblok-embed
 ```
 
 ## Usage
+
+See docs at: https://ls.sirric.co.uk
 
 ### Changelog
 
